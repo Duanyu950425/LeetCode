@@ -96,3 +96,155 @@ public:
 **题目三：**max-points-on-a-line
 
 对于给定的n个位于同一二维平面上的点，求最多能有多少个点位于同一直线上
+
+**题解：**从头到尾遍历，第一重循环从起始点a开始，第二重循环遍历剩余的b
+
+​           若a和b不重合，就可以确定一条直线
+
+​			对于每个点a，构建斜率->点数 的map
+
+​	（1）b与a重合，以a起始的所有直线点数+1
+
+​	（2）b与a不重合，a与b确定的直线点数+1
+
+```c++
+Definition for a point.
+struct Point 
+{
+    int x;
+    int y;
+    Point() : x(0), y(0) {}
+    Point(int a, int b) : x(a), y(b) {}
+};
+class Solution 
+{
+public:
+    bool compare(double x, double y)
+    {
+        if (fabs(x - y) < 1e-6)
+            return true;
+        else
+            return false;
+    }
+    int maxPoints(vector<Point> &points) 
+    {
+        int size = points.size();
+        if (size <= 2)
+            return size;
+        map<double, int> mp;
+        int dup = 0;//重复的点数
+        int ver = 0;//垂直的点数
+        int curmax = 1;//当前最大的在一条直线上的点数
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = i + 1; j < size; j++)
+            {
+                double x_dis = points[i].x - points[j].x;
+                double y_dis = points[i].y - points[j].y;
+                if (compare(points[i].x, points[j].x) && compare(points[i].y, points[j].y))
+                    dup++;
+                else if (compare(x_dis, 0.0))
+                {
+                    if (ver == 0)
+                        ver = 2;
+                    else
+                        ver++;
+                    curmax = curmax > ver ? curmax : ver;
+                }
+                else
+                {
+                    double k = y_dis / x_dis;
+                    if (mp[k] == 0)
+                        mp = 2;
+                    else
+                        mp++;
+                    curmax = curmax >mp[k] ? curmax : mp[k];
+                }
+            }
+            ret = ret > (curmax + dup) ? ret : (curmax + dup);
+        }
+        return ret;
+    }
+};
+```
+
+**题目四：**sort-list
+
+在O(n log n)的时间内使用常数级空间复杂度对链表进行排序。
+
+**题解：**我们可以考虑归并算法。
+
+归并算法的一般步骤为：
+
+1） 将待排序数组（链表）取重点并一分为二；
+
+2） 递归地对左半部分进行归并排序；
+
+3） 递归地对右半部分进行归并排序；
+
+4） 将两半部分进行合并，得到结果
+
+所以对应此题目，可以划分为三个小问题：
+
+1） 找到链表重点（快慢指针思路，快指针一次走两步，慢指针一次走一步，快指针在链表尾部时，慢指针恰好在链表中点）；
+
+2） 写出merge函数，即如何合并链表
+
+3） 写出mergesort函数，实现上述步骤
+
+```c++
+class Solution
+{
+public:
+    ListNode *FindMid(ListNode *head)
+    {
+        ListNode *pSlow = head;
+        ListNode *pFast = head;
+        while (pFast != NULL && pFast->next != NULL && pFast->next->next != NULL)
+        {
+            pSlow = pSlow->next;
+            pFast = pFast->next->next;
+        }
+        return pSlow;
+    }
+    ListNode *MergeSort(ListNode *left, ListNode *right)
+    {
+        if (left == NULL)
+            return right;
+        if (right == NULL)
+            return left;
+        ListNode *MergeHead = new ListNode(0);
+        ListNode *head = MergeHead;
+        while (left != NULL && right != NULL)
+        {
+            if (left->val < right->val)
+            {
+                head->next = left;
+                left = left->next;
+            }
+            else
+            {
+                head->next = right;
+                right = right-next;
+            }
+            head = head->next;
+        }
+        if (left == NULL)
+            head->next = right;
+        if (right == NULL)
+            head->next = left;
+        return MergeHead->next;
+    }
+    ListNode *sortList(ListNode *head)
+    {
+        if (head == NULL || head->next == NULL)//空链表或是单一链表
+            return head;
+        ListNode *mid = FindMid(head);
+        ListNode *left = sortList(mid->next);
+        mid->next = NULL;
+        ListNode *right = sortList(head);
+        return MergeSort(left, right);
+    }
+}
+```
+

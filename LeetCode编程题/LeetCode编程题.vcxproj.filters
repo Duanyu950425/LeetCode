@@ -21,5 +21,11 @@
     <ClCompile Include="02.计算逆波兰式（后缀表达式）的值.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="03.max-points-on-a-line.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="04.sort-list.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
